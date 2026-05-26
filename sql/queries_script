@@ -1,0 +1,127 @@
+-- 1. Total Revenue
+SELECT 
+    SUM(quantity * unit_price) AS total_revenue
+FROM electronics_sales;
+
+
+-- 2. Category Wise Sales
+SELECT 
+    category,
+    SUM(quantity) AS total_units_sold,
+    SUM(quantity * unit_price) AS total_revenue
+FROM electronics_sales
+GROUP BY category
+ORDER BY total_revenue DESC;
+
+
+-- 3. City Wise Revenue
+SELECT 
+    city,
+    COUNT(order_id) AS total_orders,
+    SUM(quantity * unit_price) AS total_revenue
+FROM electronics_sales
+GROUP BY city
+ORDER BY total_revenue DESC;
+
+
+-- 4. Top 10 Products by Revenue
+SELECT TOP 10
+    product_name,
+    category,
+    SUM(quantity) AS total_units_sold,
+    SUM(quantity * unit_price) AS total_revenue
+FROM electronics_sales
+GROUP BY product_name, category
+ORDER BY total_revenue DESC;
+
+
+-- 5. Top 10 Customers by Purchase Amount
+SELECT TOP 10
+    customer_id,
+    customer_name,
+    SUM(quantity * unit_price) AS total_purchase_amount
+FROM electronics_sales
+GROUP BY customer_id, customer_name
+ORDER BY total_purchase_amount DESC;
+
+
+-- 6. Monthly Sales Trend
+SELECT
+    YEAR(order_date) AS sales_year,
+    MONTH(order_date) AS sales_month,
+    SUM(quantity * unit_price) AS monthly_revenue
+FROM electronics_sales
+GROUP BY YEAR(order_date), MONTH(order_date)
+ORDER BY sales_year, sales_month;
+
+
+-- 7. Payment Mode Wise Revenue
+SELECT
+    payment_mode,
+    COUNT(order_id) AS total_orders,
+    SUM(quantity * unit_price) AS total_revenue
+FROM electronics_sales
+GROUP BY payment_mode
+ORDER BY total_revenue DESC;
+
+
+-- 8. High Value Orders
+SELECT *
+FROM electronics_sales
+WHERE quantity * unit_price >= 50000
+ORDER BY quantity * unit_price DESC;
+
+
+-- 9. Top Product in Each City
+WITH ranked_products AS (
+    SELECT
+        city,
+        product_name,
+        category,
+        quantity * unit_price AS sales_amount,
+        DENSE_RANK() OVER (
+            PARTITION BY city
+            ORDER BY quantity * unit_price DESC
+        ) AS product_rank
+    FROM electronics_sales
+)
+SELECT *
+FROM ranked_products
+WHERE product_rank = 1;
+
+
+-- 10. Running Revenue by Order Date
+SELECT
+    order_id,
+    order_date,
+    customer_name,
+    product_name,
+    quantity * unit_price AS sales_amount,
+    SUM(quantity * unit_price) OVER (
+        ORDER BY order_date, order_id
+    ) AS running_revenue
+FROM electronics_sales;
+
+
+-- 11. Customer Latest Order
+WITH latest_order AS (
+    SELECT
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date DESC
+        ) AS rn
+    FROM electronics_sales
+)
+SELECT *
+FROM latest_order
+WHERE rn = 1;
+
+
+-- 12. Average Order Value by City
+SELECT
+    city,
+    AVG(quantity * unit_price) AS avg_order_value
+FROM electronics_sales
+GROUP BY city
+ORDER BY avg_order_value DESC;
