@@ -10,7 +10,7 @@ This project demonstrates an end-to-end Azure Data Engineering solution for elec
 - Delta Lake
 - ADLS Gen2
 - On-Prem SQL Server
-- Power BI
+
 
 ---
 
@@ -26,7 +26,7 @@ Azure Databricks PySpark
         ↓
 Delta Lake Bronze / Silver / Gold
         ↓
-Azure SQL / Power BI
+Azure SQL 
 
 ---
 
