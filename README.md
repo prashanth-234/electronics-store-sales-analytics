@@ -51,6 +51,7 @@ electronics-store-azure-data-engineering-project/
 ├── sql/
 ├── adf/
 ├── databricks/
+├── Azure sql / powerbi
 └── README.md
 
 ---
